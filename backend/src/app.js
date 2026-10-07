@@ -16,9 +16,11 @@ app.use(cookieparser())
 
 
 import userRouter from './routes/user.routes.js';
+import chatRouter from './routes/chat.routes.js';
 
 
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/chat', chatRouter);
 
 import { errorHandler } from './middleware/error.middleware.js';
 app.use(errorHandler);
