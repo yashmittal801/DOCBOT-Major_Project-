@@ -12,6 +12,16 @@ export const authService = {
     return response;
   },
 
+  logout: async () => {
+    const res = await API.post('/users/logout');
+    return res.data;
+  },
+
+  changePassword: async (passwordData) => {
+    const res = await API.post('/users/change-password', passwordData);
+    return res.data;
+  },
+
   updateHealthProfile: async (healthData) => {
     return await API.post('/users/health-profile', healthData);
   },

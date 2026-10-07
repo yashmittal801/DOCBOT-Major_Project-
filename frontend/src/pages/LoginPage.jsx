@@ -8,8 +8,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    emailOrUsername: '',
     password: ''
   });
 
@@ -29,9 +28,9 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    const { name, email, password } = formData;
+    const { emailOrUsername, password } = formData;
 
-    if (!name || !email || !password) {
+    if (!emailOrUsername || !password) {
       setError('Please fill in all required fields.');
       return;
     }
@@ -39,10 +38,15 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      // Call login service
-      const response = await authService.login({ name, email, password });
+      const credentials = {
+        password,
+        [emailOrUsername.includes('@') ? 'email' : 'username']: emailOrUsername
+      };
+
+      const response = await authService.login(credentials);
       
-      const user = response.data;
+      const responseBody = response.data?.data || response.data;
+      const user = responseBody?.user;
       const userId = user?._id;
 
       if (!userId) {
@@ -95,24 +99,14 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold uppercase text-gray-600 mb-1">Full Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Yash Mittal"
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
+              
 
             <div>
-              <label className="block text-xs font-semibold uppercase text-gray-600 mb-1">Email Address</label>
+              <label className="block text-xs font-semibold uppercase text-gray-600 mb-1">Email or Username</label>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                name="emailOrUsername"
+                value={formData.emailOrUsername}
                 onChange={handleChange}
                 placeholder="yash@example.com"
                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"

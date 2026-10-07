@@ -4,10 +4,12 @@ import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
+  username: { type: String, required: true, unique: true, lowercase: true, trim: true },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   phone: { type: String, required: true, trim: true },
   gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
   password: { type: String, required: [true, 'Password is required'] },
+  refreshToken: {type: String},
 
   healthProfile: {
     age: { type: Number },
@@ -34,29 +36,29 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-// userSchema.methods.generateAccessToken = function(){
-//     return jwt.sign({
-//         _id:this.id,
-//         email:this.email,
-//         username:this.username,
-//         fullname:this.fullname,
-//         phone:this.phone
-//     },process.env.ACCESS_SECRET_TOKEN,
-//     {
-//         expiresIn:process.env.ACCESS_TOKEN_EXPIRY
-//     }
-// )
-// }
+userSchema.methods.generateAccessToken = function(){
+    return jwt.sign({
+        _id:this.id,
+        email:this.email,
+        username:this.username,
+        name:this.name,
+        phone:this.phone
+    },process.env.ACCESS_SECRET_TOKEN,
+    {
+        expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+    }
+)
+}
 
-// userSchema.methods.generateRefreshToken = function(){
-//     return jwt.sign({
-//         _id:this.id,
+userSchema.methods.generateRefreshToken = function(){
+    return jwt.sign({
+        _id:this.id,
         
-//     },process.env.REFRESH_SECRET_TOKEN,
-//     {
-//         expiresIn:process.env.REFRESH_TOKEN_EXPIRY
-//     }
-// )
-// }
+    },process.env.REFRESH_SECRET_TOKEN,
+    {
+        expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+    }
+)
+}
 
 export const User = mongoose.model('User', userSchema);

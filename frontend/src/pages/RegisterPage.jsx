@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link , useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, Lock, ShieldCheck, HeartPulse, ArrowRight } from 'lucide-react';
 import { authService } from '../services/authService'; // Loose coupling import
 
@@ -9,6 +9,7 @@ export default function RegisterPage() {
   // Local state for your 6 required fields
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     phone: '',
     gender: '',
@@ -29,10 +30,10 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
 
-    const { name, email, phone, gender, password, confirmPassword } = formData;
+    const { name, username, email, phone, gender, password, confirmPassword } = formData;
 
     // Check if fields are empty
-    if (!name || !email || !phone || !gender || !password || !confirmPassword) {
+    if (!name || !username || !email || !phone || !gender || !password || !confirmPassword) {
       setError('Please fill in all required fields.');
       return;
     }
@@ -47,7 +48,7 @@ export default function RegisterPage() {
       setLoading(true);
 
       // Call the decoupled service to send data to your backend
-      await authService.register({ name, email, phone, gender, password });
+      await authService.register({ name, username, email, phone, gender, password });
 
       alert('Registration successful!');
       // Later you can route to login once built: navigate('/login');
@@ -60,12 +61,12 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
-      
+
       {/* Background Image with Medical Stethoscope Theme & Dark Gradient Overlay */}
-      <div 
+      <div
         className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=2000&q=80')` 
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=2000&q=80')`
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-teal-950/90 via-blue-950/85 to-slate-950/90 backdrop-blur-xs"></div>
@@ -73,7 +74,7 @@ export default function RegisterPage() {
 
       {/* Registration Card Container */}
       <div className="relative z-10 max-w-lg w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/20">
-        
+
         {/* Header Branding */}
         <div className="bg-gradient-to-r from-teal-600 to-blue-600 p-6 text-white text-center relative">
           <div className="absolute top-4 left-4 bg-white/10 p-2 rounded-full backdrop-blur-sm">
@@ -85,7 +86,7 @@ export default function RegisterPage() {
 
         {/* Form Body */}
         <div className="p-8">
-          
+
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-2xl text-center font-medium">
               {error}
@@ -93,7 +94,7 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            
+
             {/* Full Name */}
             <div>
               <label className="block text-xs font-semibold uppercase text-gray-600 mb-1">Full Name</label>
@@ -111,8 +112,22 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase text-gray-600 mb-1">username</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="yash_mittal"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+            </div>
 
             {/* Email & Phone Number */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold uppercase text-gray-600 mb-1">Email Address</label>
