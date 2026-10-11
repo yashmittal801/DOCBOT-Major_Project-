@@ -237,7 +237,7 @@ const updateHealthProfile = asyncHandler(async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { $set: { healthProfile: healthUpdate } },
-    { new: true }
+    { returnDocument: 'after' }
   ).select('-password');
 
   return res.status(200).json(

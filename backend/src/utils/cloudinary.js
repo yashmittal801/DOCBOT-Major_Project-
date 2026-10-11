@@ -1,29 +1,25 @@
-import {v2 as cloudinary} from "cloudinary"
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
 
-import fs from "fs"
-
+// Configure Cloudinary with your env variables
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-    api_key: process.env.CLOUDINARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET
-})
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-const uploadOnCloudinary=async function(localPath){
-    try{
-        if(!localPath) return null;
-        const response=await cloudinary.uploader.upload(localPath,{
-            resource_type:"auto"
-        })
-        console.log("file is uploaded on cloudinary", response.url)
-        fs.unlinkSync(localPath);
-        return response
-    }
-    catch(error){
-        if (fs.existsSync(localPath)) {
-            fs.unlinkSync(localPath); 
+export const uploadOnCloudinary = (fileBuffer, folderName = 'docbot_reports') => {
+  return new Promise((resolve, reject) => {
+    let stream = cloudinary.uploader.upload_stream(
+      { folder: folderName, resource_type: 'auto' },
+      (error, result) => {
+        if (result) {
+          resolve(result);
+        } else {
+          reject(error);
         }
-        return null;
-    }
-}
-
-export {uploadOnCloudinary}
+      }
+    );
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+  });
+};
